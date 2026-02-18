@@ -1,5 +1,6 @@
 import { NativeEventEmitter, NativeModules, Platform } from 'react-native';
 import { useEffect, useState } from 'react';
+import { getNativeEventEmitterModule } from './nativeEventEmitterModule';
 
 const LINKING_ERROR =
   `The package 'react-native-otp-verify' doesn't seem to be linked. Make sure: \n\n` +
@@ -17,25 +18,6 @@ const RNOtpVerify = NativeModules.OtpVerify
         },
       }
     );
-
-interface NativeEventEmitterModule {
-  addListener?: (...args: unknown[]) => void;
-  removeListeners?: (...args: unknown[]) => void;
-}
-
-function getNativeEventEmitterModule(): NativeEventEmitterModule {
-  const nativeModule = (NativeModules.OtpVerify ?? {}) as NativeEventEmitterModule;
-
-  if (typeof nativeModule.addListener !== 'function') {
-    nativeModule.addListener = () => {};
-  }
-
-  if (typeof nativeModule.removeListeners !== 'function') {
-    nativeModule.removeListeners = () => {};
-  }
-
-  return nativeModule;
-}
 
 const eventEmitter = new NativeEventEmitter(getNativeEventEmitterModule());
 
