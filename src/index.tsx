@@ -18,7 +18,14 @@ const RNOtpVerify = NativeModules.OtpVerify
       }
     );
 
-const eventEmitter = new NativeEventEmitter(RNOtpVerify);
+const nativeEventEmitterModule =
+  NativeModules.OtpVerify &&
+  typeof NativeModules.OtpVerify.addListener === 'function' &&
+  typeof NativeModules.OtpVerify.removeListeners === 'function'
+    ? NativeModules.OtpVerify
+    : undefined;
+
+const eventEmitter = new NativeEventEmitter(nativeEventEmitterModule);
 
 interface OtpVerify {
   getOtp: () => Promise<boolean>;
