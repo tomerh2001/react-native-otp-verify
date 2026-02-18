@@ -18,15 +18,26 @@ const RNOtpVerify = NativeModules.OtpVerify
       }
     );
 
-const nativeEventEmitterModule = NativeModules.OtpVerify ?? {};
-if (typeof nativeEventEmitterModule.addListener !== 'function') {
-  nativeEventEmitterModule.addListener = () => {};
-}
-if (typeof nativeEventEmitterModule.removeListeners !== 'function') {
-  nativeEventEmitterModule.removeListeners = () => {};
+interface NativeEventEmitterModule {
+  addListener?: (...args: unknown[]) => void;
+  removeListeners?: (...args: unknown[]) => void;
 }
 
-const eventEmitter = new NativeEventEmitter(nativeEventEmitterModule);
+function getNativeEventEmitterModule(): NativeEventEmitterModule {
+  const nativeModule = (NativeModules.OtpVerify ?? {}) as NativeEventEmitterModule;
+
+  if (typeof nativeModule.addListener !== 'function') {
+    nativeModule.addListener = () => {};
+  }
+
+  if (typeof nativeModule.removeListeners !== 'function') {
+    nativeModule.removeListeners = () => {};
+  }
+
+  return nativeModule;
+}
+
+const eventEmitter = new NativeEventEmitter(getNativeEventEmitterModule());
 
 interface OtpVerify {
   getOtp: () => Promise<boolean>;
